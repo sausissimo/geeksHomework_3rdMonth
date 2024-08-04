@@ -11,6 +11,9 @@ async def start_handler(message: types.Message):
 async def info_handler(message: types.Message):
     await message.answer("testbot1")
 
+async def file_handler(message: types.Message):
+    file = open("main.py", "rb")
+    await bot.send_document(message.chat.id, document=file)
 async def meme_handler(message: types.Message):
     path = "media/"
     files = []
@@ -35,4 +38,7 @@ def register_commands(dp: Dispatcher):
     dp.register_message_handler(start_handler, commands=["start"])
     dp.register_message_handler(info_handler, commands=["info"])
     dp.register_message_handler(meme_handler, commands=["meme"])
+    dp.register_message_handler(file_handler, commands=["file"])
     dp.register_message_handler(message_handler)
+
+
