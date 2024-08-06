@@ -1,44 +1,41 @@
-import os.path
-
 from aiogram import types, Dispatcher
-from aiogram.types import InputFile
 from config import bot
+import os
+from aiogram.types import InputFile
 import random
+from db import db_main
 
+
+# @dp.message_handler(commands=['start'])
 async def start_handler(message: types.Message):
-    await message.answer(text="Hello!")
+    await bot.send_message(chat_id=message.from_user.id,
+                           text='Привет!')
+    # await message.answer(text='Привет')
+
+    print(message.from_user.id)
+    await db_main.sql_insert_registration(telegram_id=message.from_user.id,
+                                          firstname=message.from_user.first_name)
+
 
 async def info_handler(message: types.Message):
-    await message.answer("testbot1")
+    await message.answer("Бот для группы 44-2 Backend")
 
-async def file_handler(message: types.Message):
-    file = open("main.py", "rb")
-    await bot.send_document(message.chat.id, document=file)
-async def meme_handler(message: types.Message):
-    path = "media/"
+
+async def mem_handler(message: types.Message):
+    path = 'media/'
     files = []
+
     for f in os.listdir(path):
         full_path = os.path.join(path, f)
         if os.path.isfile(full_path):
             files.append(full_path)
+
     random_photo = random.choice(files)
 
     await message.answer_photo(photo=InputFile(random_photo))
 
-async def message_handler(message: types.Message):
-    if message.text.isdigit():
-        x = int(message.text)
-        x *= x
-        await message.answer(x)
-    else:
-        await message.answer(message.text)
-
 
 def register_commands(dp: Dispatcher):
-    dp.register_message_handler(start_handler, commands=["start"])
-    dp.register_message_handler(info_handler, commands=["info"])
-    dp.register_message_handler(meme_handler, commands=["meme"])
-    dp.register_message_handler(file_handler, commands=["file"])
-    dp.register_message_handler(message_handler)
-
-
+    dp.register_message_handler(start_handler, commands=['start'])
+    dp.register_message_handler(info_handler, commands=['info'])
+    dp.register_message_handler(mem_handler, text='отправь мем')
